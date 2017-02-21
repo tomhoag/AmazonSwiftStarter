@@ -95,21 +95,20 @@ class AMZRemoteService {
         
         // If there is no imageData we only have to save to DynamoDB
         if user.imageData == nil {
-            saveToDynamoDBTask.continue({ (task) -> AnyObject? in
+            saveToDynamoDBTask.continueWith(block: { (task) -> AnyObject? in
                 completion(task.error as NSError?)
                 return nil
             })
         } else {
             // We have to save data to DynamoDB, and the image to S3
-            saveToDynamoDBTask.continue(successBlock: { (task) -> AnyObject? in
+            saveToDynamoDBTask.continueOnSuccessWith(block: { (task) -> AnyObject? in
                 // An example of the AWSTask api. We return a task and continueWithBlock is called on this task.
                 return self.createUploadImageTask(user)
-            }).continue({ (task) -> AnyObject? in
+            }).continueWith(block: { (task) -> AnyObject? in
                 completion(task.error as NSError?)
                 return nil
             })
         }
-        
     }
     
     fileprivate func createUploadImageTask(_ user: UserData) -> AWSTask<AnyObject> {
@@ -134,7 +133,7 @@ class AMZRemoteService {
         uploadRequest.body = fileURL
         uploadRequest.key = fileName
         uploadRequest.bucket = AMZConstants.S3BUCKET_USERS
-        let transferManager = AWSS3TransferManager.default()!
+        let transferManager = AWSS3TransferManager.default()
         return transferManager.upload(uploadRequest)
     }
     
@@ -149,7 +148,7 @@ class AMZRemoteService {
         downloadRequest.downloadingFileURL = fileURL
         downloadRequest.bucket = AMZConstants.S3BUCKET_USERS
         downloadRequest.key = fileName
-        let transferManager = AWSS3TransferManager.default()!
+        let transferManager = AWSS3TransferManager.default()
         return transferManager.download(downloadRequest)
     }
     
@@ -181,7 +180,7 @@ extension AMZRemoteService: RemoteService {
         
         // Create a new Cognito identity
         let task: AWSTask = identityProvider.getIdentityId()
-        task.continue({ (task) -> AnyObject? in
+        task.continueWith(block: { (task) -> AnyObject? in
             if let error = task.error {
                 completion(error as NSError?)
             } else {
@@ -254,7 +253,7 @@ extension AMZRemoteService: RemoteService {
         let loadFromDynamoDBTask: AWSTask = mapper.load(AMZUser.self, hashKey: persistentUserId!, rangeKey: nil)
         
         // Download the image
-        downloadImageTask.continue({ (imageTask) -> AnyObject? in
+        downloadImageTask.continueWith(block: { (imageTask) -> AnyObject? in
             var didDownloadImage = false
             if let error = imageTask.error {
                 // If there is an error we will ignore it, it's not fatal. Maybe there is no user image.
@@ -263,7 +262,7 @@ extension AMZRemoteService: RemoteService {
                 didDownloadImage = true
             }
             // Download the data from DynamoDB
-            loadFromDynamoDBTask.continue({ (dynamoTask) -> AnyObject? in
+            loadFromDynamoDBTask.continueWith(block: { (dynamoTask) -> AnyObject? in
                 if let error = dynamoTask.error {
                     completion(nil, error as NSError?)
                 } else {
