@@ -8,6 +8,7 @@
 
 import UIKit
 import IQKeyboardManagerSwift
+import LoginWithAmazon
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -21,8 +22,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let welcomeViewController = window!.rootViewController as! WelcomeViewController
         welcomeViewController.delegate = self
+        
+        //SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
         return true
     }
+    
+    @available(iOS 9.0, *)
+    public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool
+    {
+        // return SDKApplicationDelegate.shared.application(app, open: url, options: options) // Facebook
+        return AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue) // LWA
+        /*
+        return SDKApplicationDelegate.shared.application(app, open: url, options: options) ||
+            AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue)
+        */
+    }
+    
+    // AWSS3TransferUtility
+    /*
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        // Store the completion handler.
+        AWSS3TransferUtility.interceptApplication(application, handleEventsForBackgroundURLSession: identifier, completionHandler: completionHandler)
+    }
+    */
 
     func applicationWillResignActive(_ application: UIApplication) {
     }

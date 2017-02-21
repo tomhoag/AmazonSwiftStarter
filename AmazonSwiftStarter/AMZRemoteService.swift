@@ -10,6 +10,7 @@ import Foundation
 import AWSCore
 import AWSDynamoDB
 import AWSS3
+import LoginWithAmazon
 
 class AMZRemoteService {
     
@@ -47,7 +48,9 @@ class AMZRemoteService {
     static func defaultService() -> RemoteService {
         if sharedInstance == nil {
             sharedInstance = AMZRemoteService()
-            sharedInstance!.configure()
+            //sharedInstance!.configure() // defer until we know how to configure
+            AWSLogger.default().logLevel = .warn
+
         }
         return sharedInstance!
     }
@@ -159,6 +162,11 @@ class AMZRemoteService {
 
 extension AMZRemoteService: RemoteService {
     
+    enum providers {
+        case loginwithamazon
+        case anonymous
+    }
+    
     func createCurrentUser(_ userData: UserData? , completion: @escaping ErrorResultBlock ) {
         precondition(currentUser == nil, "currentUser should not exist when createCurrentUser(..) is called")
         precondition(userData == nil || userData!.userId == nil, "You can not create a user with a given userId. UserId's are assigned automatically")
@@ -191,8 +199,8 @@ extension AMZRemoteService: RemoteService {
                 if let userData = userData {
                     newUser.updateWithData(userData)
                 }
-                // create a unique ID for the new user
-                newUser.userId = NSUUID().uuidString
+                // use identityProvider.identityId so that we can find this user with other non-anon login services (e.g. facebook)
+                newUser.userId = self.identityProvider?.identityId
                 // Now save the data on AWS. This will save the image on S3, the other data in DynamoDB
                 self.saveAMZUser(newUser) { (error) -> Void in
                     if let error = error {
@@ -241,9 +249,12 @@ extension AMZRemoteService: RemoteService {
         }
     }
     
-    
     func fetchCurrentUser(_ completion: @escaping UserDataResultBlock ) {
         precondition(persistentUserId != nil, "A persistent userId should exist")
+        
+        if(identityProvider == nil) {
+            configure() // TODO: Can this always be default if not previously configured??
+        }
         
         // Task to download the image
         let downloadImageTask: AWSTask = createDownloadImageTask(persistentUserId!)
@@ -284,8 +295,8 @@ extension AMZRemoteService: RemoteService {
                         }
                         completion(user, nil)
                     } else {
-                        // should probably never happen
-                        assertionFailure("No userData and no error, why?")
+                        // This will happen when we try to fetch a federated user that hasnt logged in previously
+                        //assertionFailure("No userData and no error, why?")
                         completion(nil, nil)
                     }
                 }
@@ -294,5 +305,87 @@ extension AMZRemoteService: RemoteService {
             return nil
         })
     }
+
     
+    /*
+     * Requires that the authorization token be passed in
+     * The authResult is a product of the authorization and contains the .token and AMZNUser (.user)
+     */
+    func fetchAmazonUser(_ token: String, completion: @escaping UserDataResultBlock) {
+        //precondition(apiResult != nil, "token cannot be nil when fetching Amazon user")
+        
+        if(identityProvider == nil) {
+            configure(provider: .loginwithamazon, token: token)
+        }
+        guard let identityProvider = identityProvider else {
+            preconditionFailure("No identity provider available, did you forget to call configure() before using AMZRemoteService?")
+        }
+        
+        let task: AWSTask = identityProvider.getIdentityId()
+        task.continueWith(block: { (task) -> AnyObject? in
+            if let error = task.error {
+                print("there was a problem getting with identityProvider!.getIdentityId()")
+                completion(nil, error as NSError?)
+            } else {
+
+                // The identityId was found, this user is authorized via amazon login.  Now create a legit user
+                self.persistentUserId = self.identityProvider?.identityId
+                print(">>>> fAU pUID: \(self.persistentUserId)")
+                self.fetchCurrentUser({ (userData, error) in
+                    // fetchCurrentUser will return (nil, nil) if this is a new user.  The new
+                    // user can be created elsewhere, but we need to nil out the persistentUserId
+                    if(userData == nil && error == nil) {
+                        self.persistentUserId = nil
+                    }
+                    completion(userData,error)
+                    
+                })
+            }
+            return nil
+        })
+    }
+
+    
+    // MARK: - Additional configure()-ers
+
+    public func configure(provider :providers, token: String) {
+        precondition(provider == .loginwithamazon, "configure(provider:token:) only for .loginwithamazon")
+        var serviceConfiguration :AWSServiceConfiguration
+        
+        let lwaProviderManager = LoginWithAmazonIdentityProviderManager(token: token)
+        
+        identityProvider = AWSCognitoCredentialsProvider(
+            regionType: AMZConstants.COGNITO_REGIONTYPE,
+            identityPoolId: AMZConstants.COGNITO_IDENTITY_POOL_ID,
+            identityProviderManager: lwaProviderManager)
+        
+        serviceConfiguration = AWSServiceConfiguration(
+            region: AMZConstants.DEFAULT_SERVICE_REGION,
+            credentialsProvider: identityProvider)
+        
+        AWSServiceManager.default().defaultServiceConfiguration = serviceConfiguration
+        
+        deviceDirectoryForUploads = createLocalTmpDirectory("upload")
+        deviceDirectoryForDownloads = createLocalTmpDirectory("download")
+        
+    }
+}
+
+// MARK: - AWSIdentityProviderManagers
+
+class LoginWithAmazonIdentityProviderManager: NSObject, AWSIdentityProviderManager {
+    
+    var token :String?
+    
+    convenience init(token: String) {
+        self.init()
+        self.token = token
+    }
+    
+    func logins() -> AWSTask<NSDictionary> {
+        if let token = token {
+            return AWSTask(result: [AWSIdentityProviderLoginWithAmazon: token])
+        }
+        return AWSTask(error:NSError(domain: "Amazon Login", code: -1 , userInfo: ["Amazon" : "No current Amazon access token"]))
+    }
 }

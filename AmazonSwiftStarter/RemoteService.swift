@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import LoginWithAmazon
 
 typealias UserDataResultBlock = (_ userData: UserData?, _ error: NSError?) -> Void
 typealias ErrorResultBlock = (_ error: NSError?) -> Void
@@ -23,6 +24,9 @@ protocol RemoteService {
     
     func fetchCurrentUser(_ completion: @escaping UserDataResultBlock )
     
+    //TODO: make optional
+    func fetchAmazonUser(_ token: String, completion: @escaping UserDataResultBlock)
+
 }
 
 

@@ -8,6 +8,7 @@
 
 import UIKit
 import GSMessages
+import LoginWithAmazon
 
 protocol WelcomeViewControllerDelegate: class {
     
@@ -24,7 +25,7 @@ class WelcomeViewController: UIViewController {
         case fetchingUserProfile
         case fetchedUserProfile
     }
-
+    
     weak var delegate: WelcomeViewControllerDelegate?
     
     fileprivate var state: State = .welcome {
@@ -36,7 +37,7 @@ class WelcomeViewController: UIViewController {
                 amazonButton.isHidden = false
                 createProfileButton.isHidden = true
                 continueButton.isHidden = true
-                orLabel.isHidden = true
+                orLabel.isHidden = false
                 activityIndicator.isHidden = true
             case .welcomed:
                 showMessage("You are now signed in. An empty user profile with a unique userId has already been created behind the scenes in DynamoDB.", type: GSMessageType.info, options: MessageOptions.Info)
@@ -77,6 +78,8 @@ class WelcomeViewController: UIViewController {
         }
     }
     
+    let service = RemoteServiceFactory.getDefaultService()
+    
     @IBOutlet weak var signInButton: ButtonWithActivityIndicator!
     
     @IBOutlet weak var amazonButton: ButtonWithActivityIndicator!
@@ -90,12 +93,63 @@ class WelcomeViewController: UIViewController {
     @IBOutlet weak var orLabel: UILabel!
     
     @IBAction func didTapAmazonButton(_ sender: Any) {
+        hideMessage()
+        amazonButton.startAnimating()
+        // login in the amazon user
+        
+        let request = AMZNAuthorizeRequest()
+        request.scopes = [AMZNProfileScope.profile()] //["profile"]
+        //request.interactiveStrategy = AMZNInteractiveStrategy.never
+        
+        AMZNAuthorizationManager.shared().authorize(request) { (authResult, userDidCancel, error) in
+            if ((error) != nil) {
+                print(error!)
+                DispatchQueue.main.async(execute: { () -> Void in
+                    self.state = .welcome
+                    self.amazonButton.stopAnimating()
+                })
+            } else if (userDidCancel) {
+                DispatchQueue.main.async(execute: { () -> Void in
+                    self.state = .welcome
+                    self.amazonButton.stopAnimating()
+                })
+            } else {
+                // Authentication was successful. Obtain the access token and user profile data.
+                // let accessToken = authResult?.token; let user = authResult?.user; let userID = authResult?.userID;
+                
+                self.service.fetchAmazonUser(authResult!.token, completion: { (userData, error) in
+
+                    if(!(error != nil) && !(userData != nil)) { // The user is new
+                        
+                        var newAmazonUser = UserDataValue()
+                        newAmazonUser.name = authResult?.user?.name
+                        
+                        self.service.createCurrentUser(newAmazonUser, completion: { (error) in
+                            if let error = error {
+                                print("something went wrong in createCurrentUser: \(error)")
+                            }
+                        })
+                    } else if ((userData != nil) && (error == nil)) {
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            self.state = .welcomed_amazon
+                            self.amazonButton.stopAnimating()
+                        })
+                    } else {
+                        print("something went wrong in fetchAmazonUser: \(error)")
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            self.state = .welcome
+                            self.amazonButton.stopAnimating()
+                        })
+                    }
+                })
+            }
+        }
     }
     
     @IBAction func didTapSignInButton(_ sender: UIButton) {
         hideMessage()
         signInButton.startAnimating()
-        RemoteServiceFactory.getDefaultService().createCurrentUser(nil) { (error) -> Void in
+        service.createCurrentUser(nil) { (error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 self.state = .welcomed
                 self.signInButton.stopAnimating()
@@ -112,7 +166,6 @@ class WelcomeViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        let service = RemoteServiceFactory.getDefaultService()
         if service.hasCurrentUserIdentity {
             state = .fetchingUserProfile
             service.fetchCurrentUser({ (userData, error) -> Void in
@@ -135,7 +188,7 @@ class WelcomeViewController: UIViewController {
             destVC.delegate = self
         }
     }
-
+    
 }
 
 // MARK: - EditProfileViewControllerDelegate
