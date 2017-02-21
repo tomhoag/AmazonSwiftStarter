@@ -27,6 +27,7 @@ protocol RemoteService {
     //TODO: make optional
     func fetchAmazonUser(_ token: String, completion: @escaping UserDataResultBlock)
 
+    func fetchFacebookUser(_ completion: @escaping UserDataResultBlock)
 }
 
 

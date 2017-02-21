@@ -9,6 +9,8 @@
 import UIKit
 import IQKeyboardManagerSwift
 import LoginWithAmazon
+import FacebookCore
+import FacebookLogin
 
 
 @UIApplicationMain
@@ -24,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let welcomeViewController = window!.rootViewController as! WelcomeViewController
         welcomeViewController.delegate = self
         
-        //SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) // facebook
+        SDKApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions) // facebook
         
         return true
     }
@@ -33,9 +35,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     public func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool
     {
         // return SDKApplicationDelegate.shared.application(app, open: url, options: options) // Facebook
-        return AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue) // LWA
+        //return AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue) // LWA
         
-        //return SDKApplicationDelegate.shared.application(app, open: url, options: options) || AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue)
+        return SDKApplicationDelegate.shared.application(app, open: url, options: options) || AIMobileLib.handleOpen(url, sourceApplication: UIApplicationOpenURLOptionsKey.sourceApplication.rawValue)
         
     }
     
@@ -53,8 +55,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
     }
-
-
 }
 
 // MARK: - WelcomeViewControllerDelegate

@@ -69,12 +69,33 @@
                                     <action selector="didTapSignInButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fIB-0B-EuG"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1h8-gI-CSF" userLabel="Amazon Button" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1h8-gI-CSF" userLabel="Facebook Button" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
                                 <rect key="frame" x="107" y="436" width="160" height="40"/>
                                 <color key="backgroundColor" red="0.98039215690000003" green="0.41176470590000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="1U9-fe-q4y"/>
                                     <constraint firstAttribute="width" constant="160" id="tl9-h2-VMY"/>
+                                </constraints>
+                                <state key="normal" title="Login With Facebook">
+                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="didTapFacebookButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="ZfZ-M2-hoX"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0qg-1u-z9M" userLabel="Amazon Button" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
+                                <rect key="frame" x="107.5" y="335.5" width="160" height="40"/>
+                                <color key="backgroundColor" red="0.98039215690000003" green="0.41176470590000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="160" id="OEu-dk-eg9"/>
+                                    <constraint firstAttribute="height" constant="40" id="oMP-nf-Wcy"/>
                                 </constraints>
                                 <state key="normal" title="Login With Amazon">
                                     <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -87,7 +108,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="didTapAmazonButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="mci-a1-SIz"/>
+                                    <action selector="didTapAmazonButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="cSa-zU-nUt"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tke-dN-TrK" userLabel="Continue Button" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
@@ -118,36 +139,50 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="1lT-hO-GMZ">
-                                <rect key="frame" x="169" y="379.5" width="37" height="37"/>
+                                <rect key="frame" x="169" y="278.5" width="37" height="37"/>
                             </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="or" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WDn-07-cyf" userLabel="Top Or Label">
+                                <rect key="frame" x="179" y="395.5" width="16" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Tke-dN-TrK" firstAttribute="top" secondItem="1lT-hO-GMZ" secondAttribute="bottom" constant="20" id="4Cm-KB-3ap"/>
                             <constraint firstItem="rbi-Ab-TIV" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ASm-Vz-H0d"/>
                             <constraint firstItem="2do-Kk-Hkx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Cii-S0-O6c"/>
+                            <constraint firstItem="WDn-07-cyf" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="D5q-Dq-1c0"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="rbi-Ab-TIV" secondAttribute="bottom" constant="90" id="EeA-In-7hD"/>
                             <constraint firstItem="ZOk-2p-v1y" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Ihg-AH-X9B"/>
                             <constraint firstItem="Tke-dN-TrK" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="JeG-cb-0j7"/>
+                            <constraint firstItem="0qg-1u-z9M" firstAttribute="top" secondItem="1lT-hO-GMZ" secondAttribute="bottom" constant="20" id="SEz-nY-sEd"/>
+                            <constraint firstItem="WDn-07-cyf" firstAttribute="top" secondItem="0qg-1u-z9M" secondAttribute="bottom" constant="20" id="Tdb-FX-AGa"/>
                             <constraint firstItem="ZOk-2p-v1y" firstAttribute="top" secondItem="jwX-kE-3G3" secondAttribute="bottom" constant="20" id="UgF-9B-6th"/>
                             <constraint firstItem="Tke-dN-TrK" firstAttribute="centerY" secondItem="1h8-gI-CSF" secondAttribute="centerY" id="XWk-Pz-qtt"/>
+                            <constraint firstItem="0qg-1u-z9M" firstAttribute="top" secondItem="1lT-hO-GMZ" secondAttribute="bottom" constant="20" id="XZy-gr-uZ4"/>
                             <constraint firstItem="2do-Kk-Hkx" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="Y65-n9-oqe"/>
+                            <constraint firstItem="1h8-gI-CSF" firstAttribute="top" secondItem="WDn-07-cyf" secondAttribute="bottom" constant="20" id="Zt9-1a-61R"/>
                             <constraint firstAttribute="trailing" secondItem="2do-Kk-Hkx" secondAttribute="trailing" id="bey-ph-QZ4"/>
                             <constraint firstItem="jwX-kE-3G3" firstAttribute="top" secondItem="Tke-dN-TrK" secondAttribute="bottom" constant="20" id="bvy-HX-GFX"/>
                             <constraint firstItem="ZOk-2p-v1y" firstAttribute="bottom" secondItem="rbi-Ab-TIV" secondAttribute="bottom" id="ewb-cJ-2xY"/>
                             <constraint firstItem="1lT-hO-GMZ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="hUY-gx-bqR"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="2do-Kk-Hkx" secondAttribute="bottom" id="j2d-Np-ZtB"/>
                             <constraint firstItem="jwX-kE-3G3" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jIj-bV-svT"/>
+                            <constraint firstItem="jwX-kE-3G3" firstAttribute="top" secondItem="Tke-dN-TrK" secondAttribute="bottom" constant="20" id="jL9-Q0-HL5"/>
+                            <constraint firstItem="0qg-1u-z9M" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="jtb-eL-ZoS"/>
                             <constraint firstItem="1h8-gI-CSF" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="zxs-an-ewL"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="1lT-hO-GMZ" id="cJh-aT-UBF"/>
-                        <outlet property="amazonButton" destination="1h8-gI-CSF" id="XdF-hI-1Gm"/>
+                        <outlet property="amazonButton" destination="0qg-1u-z9M" id="96I-7y-CKv"/>
                         <outlet property="continueButton" destination="Tke-dN-TrK" id="6cE-to-VcI"/>
                         <outlet property="createProfileButton" destination="rbi-Ab-TIV" id="xHV-Qc-JlV"/>
+                        <outlet property="facebookButton" destination="1h8-gI-CSF" id="Rzq-il-Ojo"/>
                         <outlet property="orLabel" destination="jwX-kE-3G3" id="NSp-pD-CtY"/>
                         <outlet property="signInButton" destination="ZOk-2p-v1y" id="Tk9-k9-Ri1"/>
+                        <outlet property="topOrLabel" destination="WDn-07-cyf" id="JPc-vM-68P"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -166,11 +201,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="mac-keyboard" translatesAutoresizingMaskIntoConstraints="NO" id="HKV-Ot-T7Y">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mac-keyboard" translatesAutoresizingMaskIntoConstraints="NO" id="HKV-Ot-T7Y">
+                                <rect key="frame" x="-4" y="0.0" width="383" height="667"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OeQ-1S-hEf" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
-                                <rect key="frame" x="260.5" y="520" width="80" height="40"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OeQ-1S-hEf" customClass="ButtonWithActivityIndicator" customModule="AmazonSwiftStarter" customModuleProvider="target">
+                                <rect key="frame" x="147.5" y="587" width="80" height="40"/>
                                 <color key="backgroundColor" red="0.98039215690000003" green="0.41176470590000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="NAE-AX-pzG"/>
@@ -190,8 +225,8 @@
                                     <action selector="didTapDone:" destination="dX4-hP-kU0" eventType="touchUpInside" id="w6m-Dc-ofm"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="unknownUser" translatesAutoresizingMaskIntoConstraints="NO" id="0Js-QO-Rkv">
-                                <rect key="frame" x="180" y="170" width="240" height="240"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="unknownUser" translatesAutoresizingMaskIntoConstraints="NO" id="0Js-QO-Rkv">
+                                <rect key="frame" x="67.5" y="237" width="240" height="240"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="0Js-QO-Rkv" secondAttribute="height" multiplier="1:1" id="A59-Af-qyQ"/>
                                     <constraint firstAttribute="width" constant="240" id="Y5N-qG-eCN"/>
@@ -203,8 +238,8 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Your name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PeA-DI-30a">
-                                <rect key="frame" x="180.5" y="450" width="240" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Your name" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PeA-DI-30a">
+                                <rect key="frame" x="67.5" y="517" width="240" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
