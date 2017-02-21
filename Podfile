@@ -10,6 +10,12 @@ pod 'AWSCore'
 pod 'AWSCognito'
 pod 'AWSS3'
 pod 'AWSDynamoDB'
+
+pod 'GSMessages'
+pod 'IQKeyboardManagerSwift'
+pod 'FacebookCore'
+pod 'FacebookLogin'
+
 #pod 'AWSAutoScaling'
 #pod 'AWSCloudWatch'
 #pod 'AWSEC2'
@@ -23,20 +29,24 @@ pod 'AWSDynamoDB'
 #pod 'AWSSNS'
 #pod 'AWSSQS'
 
-pod 'GSMessages'
-pod 'IQKeyboardManagerSwift'
+
 
 end
 
 target 'AmazonSwiftStarterTests' do
 
 source 'https://github.com/CocoaPods/Specs.git'
-pod 'GSMessages'
-pod 'IQKeyboardManagerSwift'
+
 pod 'AWSCore'
 pod 'AWSCognito'
 pod 'AWSS3'
 pod 'AWSDynamoDB'
+
+pod 'GSMessages'
+pod 'IQKeyboardManagerSwift'
+pod 'FacebookCore'
+pod 'FacebookLogin'
+
 #pod 'AWSAutoScaling'
 #pod 'AWSCloudWatch'
 #pod 'AWSEC2'
