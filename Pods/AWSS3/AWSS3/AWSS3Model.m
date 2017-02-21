@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -714,11 +714,20 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
 
 + (NSValueTransformer *)locationConstraintJSONTransformer {
     return [AWSMTLValueTransformer reversibleTransformerWithForwardBlock:^NSNumber *(NSString *value) {
+        if ([value caseInsensitiveCompare:@""] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintBlank);
+        }
         if ([value caseInsensitiveCompare:@"EU"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintEU);
         }
         if ([value caseInsensitiveCompare:@"eu-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintEUWest1);
+        }
+        if ([value caseInsensitiveCompare:@"eu-west-2"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintEUWest2);
+        }
+        if ([value caseInsensitiveCompare:@"us-east-2"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintUSEast2);
         }
         if ([value caseInsensitiveCompare:@"us-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintUSWest1);
@@ -744,25 +753,31 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
         if ([value caseInsensitiveCompare:@"sa-east-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintSAEast1);
         }
-        if ([value caseInsensitiveCompare:@"eu-central-1"] == NSOrderedSame) {
-            return @(AWSS3BucketLocationConstraintEUCentral1);
-        }
-        if ([value caseInsensitiveCompare:@""] == NSOrderedSame) {
-            return @(AWSS3BucketLocationConstraintBlank);
-        }
         if ([value caseInsensitiveCompare:@"cn-north-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintCNNorth1);
         }
         if ([value caseInsensitiveCompare:@"us-gov-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintUSGovWest1);
         }
+        if ([value caseInsensitiveCompare:@"eu-central-1"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintEUCentral1);
+        }
+        if ([value caseInsensitiveCompare:@"ca-central-1"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintCACentral1);
+        }
         return @(AWSS3BucketLocationConstraintUnknown);
     } reverseBlock:^NSString *(NSNumber *value) {
         switch ([value integerValue]) {
+            case AWSS3BucketLocationConstraintBlank:
+                return @"";
             case AWSS3BucketLocationConstraintEU:
                 return @"EU";
             case AWSS3BucketLocationConstraintEUWest1:
                 return @"eu-west-1";
+            case AWSS3BucketLocationConstraintEUWest2:
+                return @"eu-west-2";
+            case AWSS3BucketLocationConstraintUSEast2:
+                return @"us-east-2";
             case AWSS3BucketLocationConstraintUSWest1:
                 return @"us-west-1";
             case AWSS3BucketLocationConstraintUSWest2:
@@ -779,14 +794,14 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
                 return @"ap-northeast-2";
             case AWSS3BucketLocationConstraintSAEast1:
                 return @"sa-east-1";
-            case AWSS3BucketLocationConstraintEUCentral1:
-                return @"eu-central-1";
-            case AWSS3BucketLocationConstraintBlank:
-                return @"";
             case AWSS3BucketLocationConstraintCNNorth1:
                 return @"cn-north-1";
             case AWSS3BucketLocationConstraintUSGovWest1:
                 return @"us-gov-west-1";
+            case AWSS3BucketLocationConstraintEUCentral1:
+                return @"eu-central-1";
+            case AWSS3BucketLocationConstraintCACentral1:
+                return @"ca-central-1";
             default:
                 return nil;
         }
@@ -1564,11 +1579,20 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
 
 + (NSValueTransformer *)locationConstraintJSONTransformer {
     return [AWSMTLValueTransformer reversibleTransformerWithForwardBlock:^NSNumber *(NSString *value) {
+        if ([value caseInsensitiveCompare:@""] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintBlank);
+        }
         if ([value caseInsensitiveCompare:@"EU"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintEU);
         }
         if ([value caseInsensitiveCompare:@"eu-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintEUWest1);
+        }
+        if ([value caseInsensitiveCompare:@"eu-west-2"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintEUWest2);
+        }
+        if ([value caseInsensitiveCompare:@"us-east-2"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintUSEast2);
         }
         if ([value caseInsensitiveCompare:@"us-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintUSWest1);
@@ -1594,25 +1618,31 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
         if ([value caseInsensitiveCompare:@"sa-east-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintSAEast1);
         }
-        if ([value caseInsensitiveCompare:@"eu-central-1"] == NSOrderedSame) {
-            return @(AWSS3BucketLocationConstraintEUCentral1);
-        }
-        if ([value caseInsensitiveCompare:@""] == NSOrderedSame) {
-            return @(AWSS3BucketLocationConstraintBlank);
-        }
         if ([value caseInsensitiveCompare:@"cn-north-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintCNNorth1);
         }
         if ([value caseInsensitiveCompare:@"us-gov-west-1"] == NSOrderedSame) {
             return @(AWSS3BucketLocationConstraintUSGovWest1);
         }
+        if ([value caseInsensitiveCompare:@"eu-central-1"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintEUCentral1);
+        }
+        if ([value caseInsensitiveCompare:@"ca-central-1"] == NSOrderedSame) {
+            return @(AWSS3BucketLocationConstraintCACentral1);
+        }
         return @(AWSS3BucketLocationConstraintUnknown);
     } reverseBlock:^NSString *(NSNumber *value) {
         switch ([value integerValue]) {
+            case AWSS3BucketLocationConstraintBlank:
+                return @"";
             case AWSS3BucketLocationConstraintEU:
                 return @"EU";
             case AWSS3BucketLocationConstraintEUWest1:
                 return @"eu-west-1";
+            case AWSS3BucketLocationConstraintEUWest2:
+                return @"eu-west-2";
+            case AWSS3BucketLocationConstraintUSEast2:
+                return @"us-east-2";
             case AWSS3BucketLocationConstraintUSWest1:
                 return @"us-west-1";
             case AWSS3BucketLocationConstraintUSWest2:
@@ -1629,14 +1659,14 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
                 return @"ap-northeast-2";
             case AWSS3BucketLocationConstraintSAEast1:
                 return @"sa-east-1";
-            case AWSS3BucketLocationConstraintEUCentral1:
-                return @"eu-central-1";
-            case AWSS3BucketLocationConstraintBlank:
-                return @"";
             case AWSS3BucketLocationConstraintCNNorth1:
                 return @"cn-north-1";
             case AWSS3BucketLocationConstraintUSGovWest1:
                 return @"us-gov-west-1";
+            case AWSS3BucketLocationConstraintEUCentral1:
+                return @"eu-central-1";
+            case AWSS3BucketLocationConstraintCACentral1:
+                return @"ca-central-1";
             default:
                 return nil;
         }
@@ -1989,6 +2019,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"lastModified" : @"LastModified",
              @"metadata" : @"Metadata",
              @"missingMeta" : @"MissingMeta",
+             @"partsCount" : @"PartsCount",
              @"replicationStatus" : @"ReplicationStatus",
              @"requestCharged" : @"RequestCharged",
              @"restore" : @"Restore",
@@ -2124,6 +2155,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"ifNoneMatch" : @"IfNoneMatch",
              @"ifUnmodifiedSince" : @"IfUnmodifiedSince",
              @"key" : @"Key",
+             @"partNumber" : @"PartNumber",
              @"range" : @"Range",
              @"requestPayer" : @"RequestPayer",
              @"responseCacheControl" : @"ResponseCacheControl",
@@ -2355,6 +2387,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"lastModified" : @"LastModified",
              @"metadata" : @"Metadata",
              @"missingMeta" : @"MissingMeta",
+             @"partsCount" : @"PartsCount",
              @"replicationStatus" : @"ReplicationStatus",
              @"requestCharged" : @"RequestCharged",
              @"restore" : @"Restore",
@@ -2490,6 +2523,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"ifNoneMatch" : @"IfNoneMatch",
              @"ifUnmodifiedSince" : @"IfUnmodifiedSince",
              @"key" : @"Key",
+             @"partNumber" : @"PartNumber",
              @"range" : @"Range",
              @"requestPayer" : @"RequestPayer",
              @"SSECustomerAlgorithm" : @"SSECustomerAlgorithm",
@@ -2894,6 +2928,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"marker" : @"Marker",
              @"maxKeys" : @"MaxKeys",
              @"prefix" : @"Prefix",
+             @"requestPayer" : @"RequestPayer",
              };
 }
 
@@ -2907,6 +2942,22 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
         switch ([value integerValue]) {
             case AWSS3EncodingTypeURL:
                 return @"url";
+            default:
+                return nil;
+        }
+    }];
+}
+
++ (NSValueTransformer *)requestPayerJSONTransformer {
+    return [AWSMTLValueTransformer reversibleTransformerWithForwardBlock:^NSNumber *(NSString *value) {
+        if ([value caseInsensitiveCompare:@"requester"] == NSOrderedSame) {
+            return @(AWSS3RequestPayerRequester);
+        }
+        return @(AWSS3RequestPayerUnknown);
+    } reverseBlock:^NSString *(NSNumber *value) {
+        switch ([value integerValue]) {
+            case AWSS3RequestPayerRequester:
+                return @"requester";
             default:
                 return nil;
         }
@@ -2971,6 +3022,7 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
              @"fetchOwner" : @"FetchOwner",
              @"maxKeys" : @"MaxKeys",
              @"prefix" : @"Prefix",
+             @"requestPayer" : @"RequestPayer",
              @"startAfter" : @"StartAfter",
              };
 }
@@ -2985,6 +3037,22 @@ return [date aws_stringValue:AWSDateISO8601DateFormat1];
         switch ([value integerValue]) {
             case AWSS3EncodingTypeURL:
                 return @"url";
+            default:
+                return nil;
+        }
+    }];
+}
+
++ (NSValueTransformer *)requestPayerJSONTransformer {
+    return [AWSMTLValueTransformer reversibleTransformerWithForwardBlock:^NSNumber *(NSString *value) {
+        if ([value caseInsensitiveCompare:@"requester"] == NSOrderedSame) {
+            return @(AWSS3RequestPayerRequester);
+        }
+        return @(AWSS3RequestPayerUnknown);
+    } reverseBlock:^NSString *(NSNumber *value) {
+        switch ([value integerValue]) {
+            case AWSS3RequestPayerRequester:
+                return @"requester";
             default:
                 return nil;
         }

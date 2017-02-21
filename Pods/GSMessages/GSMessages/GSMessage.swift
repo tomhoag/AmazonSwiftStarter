@@ -81,11 +81,11 @@ public class GSMessage {
     func show() {
 
         if inView?.installedMessage != nil { return }
-        
-        updateFrames()
 
         inView?.installedMessage = self
         inView?.addSubview(messageView)
+        
+        updateFrames()
 
         if animation == .fade {
             messageView.alpha = 0
@@ -203,7 +203,16 @@ public class GSMessage {
         messageText.numberOfLines = textNumberOfLines
         messageView.addSubview(messageText)
         
+        if textNumberOfLines == 0 {
+            height = max(text.boundingRect(with: CGSize(width: inView.frame.size.width - textPadding * 2, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: GSMessage.font], context: nil).height + (height - " ".boundingRect(with: CGSize(width: inView.frame.size.width, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [NSFontAttributeName: GSMessage.font], context: nil).height), height)
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updateFrames), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+        
+        if position == .top {
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        }
         
         if hideOnTap { messageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))) }
 
@@ -220,6 +229,7 @@ public class GSMessage {
     }
     
     @objc fileprivate func updateFrames() {
+        guard let inView = inView else { return }
         y       = 0
         offsetY = 0
         
@@ -235,12 +245,31 @@ public class GSMessage {
                 if !navigationBarHidden && navigationBarTranslucent { offsetY+=navigationBarHeight }
                 if (navigationBarHidden && !statusBarHidden) { offsetY+=20 }
             }
+            y = max(0 - inView.frame.origin.y, 0)
         case .bottom:
             y = inView.bounds.size.height - height
         }
         
-        messageView.frame     = CGRect(x: 0, y: y, width: inView.bounds.size.width, height: messageHeight)
+        messageView.frame = CGRect(x: 0, y: y, width: inView.bounds.size.width, height: messageHeight)
         messageText.frame = CGRect(x: textPadding, y: offsetY, width: messageView.bounds.size.width - textPadding * 2, height: height)
+    }
+    
+    @objc fileprivate func keyboardWillShow(notification: NSNotification) {
+        guard let inView = self.inView else { return }
+        
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.messageView.frame.origin.y == 0 && inView.frame.origin.y < 0 {
+                self.messageView.frame.origin.y += keyboardSize.height
+            }
+        }
+    }
+    
+    @objc fileprivate func keyboardWillHide(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+            if self.messageView.frame.origin.y != 0 {
+                self.messageView.frame.origin.y -= keyboardSize.height
+            }
+        }
     }
 
     fileprivate func removeFromSuperview() {

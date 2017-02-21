@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -48,8 +48,11 @@ typedef NS_ENUM(NSInteger, AWSS3BucketCannedACL) {
 
 typedef NS_ENUM(NSInteger, AWSS3BucketLocationConstraint) {
     AWSS3BucketLocationConstraintUnknown,
+    AWSS3BucketLocationConstraintBlank,
     AWSS3BucketLocationConstraintEU,
     AWSS3BucketLocationConstraintEUWest1,
+    AWSS3BucketLocationConstraintEUWest2,
+    AWSS3BucketLocationConstraintUSEast2,
     AWSS3BucketLocationConstraintUSWest1,
     AWSS3BucketLocationConstraintUSWest2,
     AWSS3BucketLocationConstraintAPSouth1,
@@ -58,10 +61,10 @@ typedef NS_ENUM(NSInteger, AWSS3BucketLocationConstraint) {
     AWSS3BucketLocationConstraintAPNortheast1,
     AWSS3BucketLocationConstraintAPNortheast2,
     AWSS3BucketLocationConstraintSAEast1,
-    AWSS3BucketLocationConstraintEUCentral1,
-    AWSS3BucketLocationConstraintBlank,
     AWSS3BucketLocationConstraintCNNorth1,
     AWSS3BucketLocationConstraintUSGovWest1,
+    AWSS3BucketLocationConstraintEUCentral1,
+    AWSS3BucketLocationConstraintCACentral1,
 };
 
 typedef NS_ENUM(NSInteger, AWSS3BucketLogsPermission) {
@@ -2100,6 +2103,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
 @property (nonatomic, strong) NSNumber * _Nullable missingMeta;
 
 /**
+ The count of parts this object has.
+ */
+@property (nonatomic, strong) NSNumber * _Nullable partsCount;
+
+/**
  
  */
 @property (nonatomic, assign) AWSS3ReplicationStatus replicationStatus;
@@ -2186,6 +2194,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
  
  */
 @property (nonatomic, strong) NSString * _Nullable key;
+
+/**
+ Part number of the object being read. This is a positive integer between 1 and 10,000. Effectively performs a 'ranged' GET request for the part specified. Useful for downloading just a part of an object.
+ */
+@property (nonatomic, strong) NSNumber * _Nullable partNumber;
 
 /**
  Downloads the specified range bytes of an object. For more information about the HTTP Range header, go to http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35.
@@ -2431,6 +2444,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
 @property (nonatomic, strong) NSNumber * _Nullable missingMeta;
 
 /**
+ The count of parts this object has.
+ */
+@property (nonatomic, strong) NSNumber * _Nullable partsCount;
+
+/**
  
  */
 @property (nonatomic, assign) AWSS3ReplicationStatus replicationStatus;
@@ -2517,6 +2535,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
  
  */
 @property (nonatomic, strong) NSString * _Nullable key;
+
+/**
+ Part number of the object being read. This is a positive integer between 1 and 10,000. Effectively performs a 'ranged' HEAD request for the part specified. Useful querying about the size of the part and the number of parts in this object.
+ */
+@property (nonatomic, strong) NSNumber * _Nullable partNumber;
 
 /**
  Downloads the specified range bytes of an object. For more information about the HTTP Range header, go to http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.35.
@@ -3033,6 +3056,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
  */
 @property (nonatomic, strong) NSString * _Nullable prefix;
 
+/**
+ Confirms that the requester knows that she or he will be charged for the list objects request. Bucket owners need not specify this parameter in their requests.
+ */
+@property (nonatomic, assign) AWSS3RequestPayer requestPayer;
+
 @end
 
 /**
@@ -3143,6 +3171,11 @@ typedef NS_ENUM(NSInteger, AWSS3Types) {
  Limits the response to keys that begin with the specified prefix.
  */
 @property (nonatomic, strong) NSString * _Nullable prefix;
+
+/**
+ Confirms that the requester knows that she or he will be charged for the list objects request in V2 style. Bucket owners need not specify this parameter in their requests.
+ */
+@property (nonatomic, assign) AWSS3RequestPayer requestPayer;
 
 /**
  StartAfter is where you want Amazon S3 to start listing from. Amazon S3 starts listing after this specified key. StartAfter can be any key in the bucket

@@ -1,15 +1,25 @@
+#ifdef __OBJC__
 #import <UIKit/UIKit.h>
+#else
+#ifndef FOUNDATION_EXPORT
+#if defined(__cplusplus)
+#define FOUNDATION_EXPORT extern "C"
+#else
+#define FOUNDATION_EXPORT extern
+#endif
+#endif
+#endif
 
 #import "AWSCore.h"
 #import "AWSCredentialsProvider.h"
 #import "AWSIdentityProvider.h"
 #import "AWSSignature.h"
 #import "AWSBolts.h"
-#import "AWSBoltsVersion.h"
 #import "AWSCancellationToken.h"
 #import "AWSCancellationTokenRegistration.h"
 #import "AWSCancellationTokenSource.h"
 #import "AWSExecutor.h"
+#import "AWSGeneric.h"
 #import "AWSTask.h"
 #import "AWSTaskCompletionSource.h"
 #import "AWSCognitoIdentity.h"

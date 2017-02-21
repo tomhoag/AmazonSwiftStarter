@@ -1,5 +1,5 @@
 //
-// Copyright 2010-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License").
 // You may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
  
  *Swift*
 
-     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-         let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
-         let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider: credentialProvider)
-         AWSServiceManager.defaultServiceManager().defaultServiceConfiguration = configuration
-
-         return true
-     }
+     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
+        let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider: credentialProvider)
+        AWSServiceManager.default().defaultServiceConfiguration = configuration
+ 
+        return true
+    }
 
  *Objective-C*
 
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     let S3 = AWSS3.defaultS3()
+     let S3 = AWSS3.default()
 
  *Objective-C*
 
@@ -80,13 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-         let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
-         let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
-         AWSS3.registerS3WithConfiguration(configuration, forKey: "USWest2S3")
-
-         return true
-     }
+     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
+        let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
+        AWSS3.register(with: configuration!, forKey: "USWest2S3")
+ 
+        return true
+    }
 
  *Objective-C*
 
@@ -125,13 +125,13 @@ NS_ASSUME_NONNULL_BEGIN
 
  *Swift*
 
-     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-         let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
-         let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
-         AWSS3.registerS3WithConfiguration(configuration, forKey: "USWest2S3")
-
-         return true
-     }
+     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
+        let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
+        AWSS3.register(with: configuration!, forKey: "USWest2S3")
+ 
+        return true
+    }
 
  *Objective-C*
 
@@ -751,7 +751,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)getBucketPolicy:(AWSS3GetBucketPolicyRequest *)request completionHandler:(void (^ _Nullable)(AWSS3GetBucketPolicyOutput * _Nullable response, NSError * _Nullable error))completionHandler;
 
 /**
- Deprecated, see the GetBucketReplicationConfiguration operation.
+ Returns the replication configuration of a bucket.
  
  @param request A container for the necessary parameters to execute the GetBucketReplication service method.
 
@@ -763,7 +763,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (AWSTask<AWSS3GetBucketReplicationOutput *> *)getBucketReplication:(AWSS3GetBucketReplicationRequest *)request;
 
 /**
- Deprecated, see the GetBucketReplicationConfiguration operation.
+ Returns the replication configuration of a bucket.
  
  @param request A container for the necessary parameters to execute the GetBucketReplication service method.
  @param completionHandler The completion handler to call when the load request is complete.
