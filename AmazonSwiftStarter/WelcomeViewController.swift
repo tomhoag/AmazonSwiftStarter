@@ -20,6 +20,7 @@ class WelcomeViewController: UIViewController {
     enum State {
         case welcome
         case welcomed
+        case welcomed_amazon
         case fetchingUserProfile
         case fetchedUserProfile
     }
@@ -32,6 +33,7 @@ class WelcomeViewController: UIViewController {
             case .welcome:
                 showMessage("\"Anonymous Sign In\" will call AWS Cognito. The app will receive an identity token from the Cognito Service and will store it on the device.", type: GSMessageType.info, options: MessageOptions.Info)
                 signInButton.isHidden = false
+                amazonButton.isHidden = false
                 createProfileButton.isHidden = true
                 continueButton.isHidden = true
                 orLabel.isHidden = true
@@ -39,12 +41,23 @@ class WelcomeViewController: UIViewController {
             case .welcomed:
                 showMessage("You are now signed in. An empty user profile with a unique userId has already been created behind the scenes in DynamoDB.", type: GSMessageType.info, options: MessageOptions.Info)
                 signInButton.isHidden = true
+                amazonButton.isHidden = true
+                createProfileButton.isHidden = false
+                continueButton.isHidden = true
+                orLabel.isHidden = true
+                activityIndicator.isHidden = true
+            case .welcomed_amazon:
+                showMessage("You are now signed in using your Amazon account. A user profile with your Amazon info and a unique userId has already been created behind the scenes in DynamoDB.", type: GSMessageType.info, options: MessageOptions.Info)
+                signInButton.isHidden = true
+                amazonButton.isHidden = true
+                createProfileButton.setTitle("Edit Profile", for: UIControlState())
                 createProfileButton.isHidden = false
                 continueButton.isHidden = true
                 orLabel.isHidden = true
                 activityIndicator.isHidden = true
             case .fetchingUserProfile:
                 signInButton.isHidden = true
+                amazonButton.isHidden = true
                 createProfileButton.isHidden = true
                 continueButton.isHidden = true
                 orLabel.isHidden = true
@@ -53,6 +66,7 @@ class WelcomeViewController: UIViewController {
             case .fetchedUserProfile:
                 showMessage("You are automatically signed in on your existing account. Your user profile data was fetched from AWS on the background.", type: GSMessageType.info, options: MessageOptions.Info)
                 signInButton.isHidden = true
+                amazonButton.isHidden = true
                 createProfileButton.setTitle("Edit Profile", for: UIControlState())
                 createProfileButton.isHidden = false
                 continueButton.isHidden = false
@@ -65,6 +79,8 @@ class WelcomeViewController: UIViewController {
     
     @IBOutlet weak var signInButton: ButtonWithActivityIndicator!
     
+    @IBOutlet weak var amazonButton: ButtonWithActivityIndicator!
+    
     @IBOutlet weak var createProfileButton: UIButton!
     
     @IBOutlet weak var continueButton: ButtonWithActivityIndicator!
@@ -73,6 +89,8 @@ class WelcomeViewController: UIViewController {
     
     @IBOutlet weak var orLabel: UILabel!
     
+    @IBAction func didTapAmazonButton(_ sender: Any) {
+    }
     
     @IBAction func didTapSignInButton(_ sender: UIButton) {
         hideMessage()
