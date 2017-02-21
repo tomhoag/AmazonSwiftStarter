@@ -88,7 +88,7 @@ class AMZRemoteService {
     }
     
     // This is where the saving to S3 (image) and DynamoDB (data) is done.
-    func saveAMZUser(_ user: AMZUser, completion: @escaping ErrorResultBlock)  {
+    func XXsaveAMZUser(_ user: AMZUser, completion: @escaping ErrorResultBlock)  {
         precondition(user.userId != nil, "You should provide a user object with a userId when saving a user")
         
         let mapper = AWSDynamoDBObjectMapper.default()
@@ -114,32 +114,58 @@ class AMZRemoteService {
         }
     }
     
-    fileprivate func createUploadImageTask(_ user: UserData) -> AWSTask<AnyObject> {
+    func saveAMZUser(_ user: AMZUser, completion: @escaping ErrorResultBlock) {
+        precondition(user.userId != nil, "You should provide a user object with a userId when saving a user")
+        
+        let mapper = AWSDynamoDBObjectMapper.default()
+        // We create a task that will save the user to DynamoDB
+        // This works because AMZUser extends AWSDynamoDBObjectModel and conforms to AWSDynamoDBModeling
+        let saveToDynamoDBTask: AWSTask = mapper.save(user)
+        
+        saveToDynamoDBTask.continueOnSuccessWith(block: { (awsTask) -> Any? in
+            if user.imageData == nil {
+                return nil
+            } else {
+                return self.createUploadImageTask(user)
+            }
+        }).continueWith(block: { (awsTask) -> Any? in
+            completion(awsTask.error as NSError?)
+            return nil
+        })
+    }
+    
+    fileprivate func createUploadImageTask(_ user: UserData) -> AWSTask<AWSS3TransferUtilityUploadTask> { //AWSTask<AnyObject> {
         guard let userId = user.userId else {
             preconditionFailure("You should provide a user object with a userId when uploading a user image")
         }
         guard let imageData = user.imageData else {
             preconditionFailure("You are trying to create an UploadImageTask, but the user has no imageData")
         }
-        
-        // Save the image as a file. The filename is the userId
         let fileName = "\(userId).jpg"
-        let fileURL = deviceDirectoryForUploads!.appendingPathComponent(fileName)
-        do {
-            try imageData.write(to: fileURL, options: .atomic)
-        } catch let err {
-            print("Error writing image to file: \(err.localizedDescription)")
+        
+        let expression = AWSS3TransferUtilityUploadExpression()
+        expression.progressBlock = {(task, progress) in DispatchQueue.main.async(execute: {
+            // Do something e.g. Update a progress bar.
+        })
+        }
+        let completionHandler: AWSS3TransferUtilityUploadCompletionHandlerBlock = { (task, error) -> Void in
+            DispatchQueue.main.async(execute: {
+                // Do something e.g. Alert a user for transfer completion.
+                // On failed uploads, `error` contains the error object.
+                print("image finished uploading")
+            })
         }
         
-        // Create a task to upload the file
-        let uploadRequest = AWSS3TransferManagerUploadRequest()!
-        uploadRequest.body = fileURL
-        uploadRequest.key = fileName
-        uploadRequest.bucket = AMZConstants.S3BUCKET_USERS
-        let transferManager = AWSS3TransferManager.default()
-        return transferManager.upload(uploadRequest)
+        let  transferUtility = AWSS3TransferUtility.default()
+        
+        return transferUtility.uploadData(imageData,
+                                          bucket: AMZConstants.S3BUCKET_USERS,
+                                          key: fileName,
+                                          contentType: "image/jpg",
+                                          expression: expression,
+                                          completionHandler: completionHandler)
     }
-    
+
     fileprivate func createDownloadImageTask(_ userId: String) -> AWSTask<AnyObject> {
         
         // The location where the downloaded file has to be saved on the device
@@ -249,63 +275,50 @@ extension AMZRemoteService: RemoteService {
         }
     }
     
-    func fetchCurrentUser(_ completion: @escaping UserDataResultBlock ) {
+    func fetchCurrentUser(_ completion: @escaping UserDataResultBlock) { //(userData, error)
         precondition(persistentUserId != nil, "A persistent userId should exist")
         
         if(identityProvider == nil) {
             configure() // TODO: Can this always be default if not previously configured??
         }
         
-        // Task to download the image
-        let downloadImageTask: AWSTask = createDownloadImageTask(persistentUserId!)
-        
         // Task to fetch the DynamoDB data
         let mapper = AWSDynamoDBObjectMapper.default()
         let loadFromDynamoDBTask: AWSTask = mapper.load(AMZUser.self, hashKey: persistentUserId!, rangeKey: nil)
+        var outerUser: AMZUser?
         
-        // Download the image
-        downloadImageTask.continueWith(block: { (imageTask) -> AnyObject? in
-            var didDownloadImage = false
-            if let error = imageTask.error {
-                // If there is an error we will ignore it, it's not fatal. Maybe there is no user image.
-                print("Error downloading image: \(error)")
+        loadFromDynamoDBTask.continueOnSuccessWith(block: { (dynamoTask:AWSTask<AnyObject>) -> Any? in
+            
+            // don't have to check for an error on continueOnSuccessWith
+            
+            if (dynamoTask.result as? AMZUser) != nil {
+                outerUser = dynamoTask.result as? AMZUser
+                return self.createDownloadImageTask(self.persistentUserId!)
+                // defer completion until the next continueWith()
             } else {
-                didDownloadImage = true
-            }
-            // Download the data from DynamoDB
-            loadFromDynamoDBTask.continueWith(block: { (dynamoTask) -> AnyObject? in
-                if let error = dynamoTask.error {
-                    completion(nil, error as NSError?)
-                } else {
-                    if let user = dynamoTask.result as? AMZUser {
-                        if didDownloadImage {
-                            let fileName = "\(self.persistentUserId!).jpg"
-                            let fileURL = self.deviceDirectoryForDownloads!.appendingPathComponent(fileName)
-                            do {
-                                try user.imageData = Data(contentsOf: fileURL)
-                            } catch let err {
-                                completion(nil, err as NSError?)
-                                return nil
-                            }
-                        }
-                        if var currentUser = self.currentUser {
-                            currentUser.updateWithData(user)
-                        } else {
-                            self.currentUser = user
-                        }
-                        completion(user, nil)
-                    } else {
-                        // This will happen when we try to fetch a federated user that hasnt logged in previously
-                        //assertionFailure("No userData and no error, why?")
-                        completion(nil, nil)
-                    }
-                }
+                //completion(nil, nil)
                 return nil
-            })
+            }
+        }).continueOnSuccessWith(block: { (downloadTask:AWSTask<AnyObject>) -> Any? in
+            
+            if outerUser != nil {
+                // add the image data to the user
+                let fileName = "\(self.persistentUserId!).jpg"
+                let fileURL = self.deviceDirectoryForDownloads!.appendingPathComponent(fileName)
+                do {
+                    try outerUser?.imageData = Data(contentsOf: fileURL)
+                } catch let err {
+                    print("there was a problem gettting the data, non-fatal . . . \(err)")
+                }
+                self.currentUser = outerUser
+                self.persistentUserId = outerUser?.userId
+            }
+            
+            print("fetchCurrentUser is complete!!")
+            completion(outerUser,nil)
             return nil
         })
     }
-
     
     /*
      * Requires that the authorization token be passed in

@@ -127,14 +127,19 @@ class WelcomeViewController: UIViewController {
                         self.service.createCurrentUser(newAmazonUser, completion: { (error) in
                             if let error = error {
                                 print("something went wrong in createCurrentUser: \(error)")
+                            } else {
+                                DispatchQueue.main.async(execute: { () -> Void in
+                                    self.state = .welcomed_amazon
+                                    self.amazonButton.stopAnimating()
+                                })
                             }
                         })
-                    } else if ((userData != nil) && (error == nil)) {
+                    } else if ((userData != nil) && (error == nil)) { // Existing User
                         DispatchQueue.main.async(execute: { () -> Void in
                             self.state = .welcomed_amazon
                             self.amazonButton.stopAnimating()
                         })
-                    } else {
+                    } else { // uh-oh
                         print("something went wrong in fetchAmazonUser: \(error)")
                         DispatchQueue.main.async(execute: { () -> Void in
                             self.state = .welcome
